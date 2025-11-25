@@ -1,0 +1,54 @@
+# Maven/Gradle build artifacts
+target/
+build/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Maven wrapper files (excluded as per requirements)
+mvnw
+mvnw.cmd
+.mvn/
+
+# Gradle wrapper files (excluded as per requirements)
+gradlew
+gradlew.bat
+gradle/wrapper/
+
+# Documentation and README files
+*.md
+README*
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Runtime directories
+node_modules/
+
+# Test files
+src/test/
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
