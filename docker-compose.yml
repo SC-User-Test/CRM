@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  crmcomptest-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: crmcomptest:latest
+    container_name: crmcomptest-app
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_OPTS=-Xmx512m -Xms256m -XX:+UseContainerSupport
+      - TZ=UTC
+      # External service connections (configure as needed)
+      - DATABASE_URL=${DATABASE_URL:-}
+      - DATABASE_USERNAME=${DATABASE_USERNAME:-}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-}
+    volumes:
+      - ./logs:/app/logs
+      - ./config:/app/config
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  logs:
+  config:
