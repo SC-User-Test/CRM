@@ -49,14 +49,15 @@ public class ExcelView extends AbstractXlsView{
         header.getCell(2).setCellStyle(style);
         header.createCell(3).setCellValue("Email");
         header.getCell(3).setCellStyle(style);
-        header.createCell(4).setCellValue("Password");
+        // Password field removed for security - should never be exposed in exports
+        // header.createCell(4).setCellValue("Password");
+        // header.getCell(4).setCellStyle(style);
+        header.createCell(4).setCellValue("Enabled");
         header.getCell(4).setCellStyle(style);
-        header.createCell(5).setCellValue("Enabled");
+        header.createCell(5).setCellValue("Role_id");
         header.getCell(5).setCellStyle(style);
-        header.createCell(6).setCellValue("Role_id");
+        header.createCell(6).setCellValue("Role_name");
         header.getCell(6).setCellStyle(style);
-        header.createCell(7).setCellValue("Role_name");
-        header.getCell(7).setCellStyle(style);
 
         int rowCount = 1;
 
@@ -66,10 +67,11 @@ public class ExcelView extends AbstractXlsView{
             userRow.createCell(1).setCellValue(user.getLastName());
             userRow.createCell(2).setCellValue(user.getUsername());
             userRow.createCell(3).setCellValue(user.getEmail());
-            userRow.createCell(4).setCellValue(user.getPassword());
-            userRow.createCell(5).setCellValue(user.getEnabled());
-            userRow.createCell(6).setCellValue(user.getRole().getId());
-            userRow.createCell(7).setCellValue(user.getRole().getName());
+            // Password removed for security - never expose passwords in exports
+            // userRow.createCell(4).setCellValue(user.getPassword());
+            userRow.createCell(4).setCellValue(user.getEnabled());
+            userRow.createCell(5).setCellValue(user.getRole().getId());
+            userRow.createCell(6).setCellValue(user.getRole().getName());
         }
 
     }

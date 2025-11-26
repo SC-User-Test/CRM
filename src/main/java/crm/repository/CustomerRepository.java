@@ -20,7 +20,9 @@ import java.util.Set;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-    @Query(value = "select max(id) from crm.customer", nativeQuery = true)
+    // Cloud-ready query: removed schema qualification for cross-environment compatibility
+    // Schema should be managed via spring.datasource.url or database migration tools
+    @Query(value = "select max(id) from customer", nativeQuery = true)
     Long getMaxId();
 
     Iterable<Customer> findAllByEnabled(int enabled);

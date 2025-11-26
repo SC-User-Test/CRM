@@ -49,8 +49,9 @@ public class PdfView extends AbstractPdfView {
         cell.setPhrase(new Phrase("Email", font));
         table.addCell(cell);
 
-        cell.setPhrase(new Phrase("Password", font));
-        table.addCell(cell);
+        // Password field removed for security - should never be exposed in exports
+        // cell.setPhrase(new Phrase("Password", font));
+        // table.addCell(cell);
 
         cell.setPhrase(new Phrase("Enabled", font));
         table.addCell(cell);
@@ -66,7 +67,8 @@ public class PdfView extends AbstractPdfView {
             table.addCell(user.getLastName());
             table.addCell(user.getUsername());
             table.addCell(user.getEmail());
-            table.addCell(user.getPassword());
+            // Password removed for security - never expose passwords in exports
+            // table.addCell(user.getPassword());
             table.addCell(String.valueOf(user.getEnabled()));
             table.addCell(String.valueOf(user.getRole().getId()));
             table.addCell(user.getRole().getName());
