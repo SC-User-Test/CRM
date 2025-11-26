@@ -119,7 +119,7 @@ class UserServiceImplTest {
 
         userService.editUser(user);
 
-        verify(roleRepository, times(1)).findByName("ROLE_USER");
+        verify(roleRepository, times(2)).findByName("ROLE_USER");
         verify(userRepository, times(1)).save(user);
     }
 

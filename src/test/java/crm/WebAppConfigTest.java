@@ -32,6 +32,7 @@ class WebAppConfigTest {
     @Test
     void testAddViewControllers() {
         ViewControllerRegistry registry = mock(ViewControllerRegistry.class);
+        when(registry.addViewController(anyString())).thenReturn(mock(org.springframework.web.servlet.config.annotation.ViewControllerRegistration.class));
 
         assertDoesNotThrow(() -> webAppConfig.addViewControllers(registry));
     }
@@ -39,6 +40,11 @@ class WebAppConfigTest {
     @Test
     void testConfigureContentNegotiation() {
         ContentNegotiationConfigurer configurer = mock(ContentNegotiationConfigurer.class);
+        when(configurer.favorParameter(anyBoolean())).thenReturn(configurer);
+        when(configurer.parameterName(anyString())).thenReturn(configurer);
+        when(configurer.ignoreAcceptHeader(anyBoolean())).thenReturn(configurer);
+        when(configurer.defaultContentType(any())).thenReturn(configurer);
+        when(configurer.mediaTypes(anyMap())).thenReturn(configurer);
 
         assertDoesNotThrow(() -> webAppConfig.configureContentNegotiation(configurer));
     }
