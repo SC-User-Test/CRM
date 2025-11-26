@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import jakarta.validation.constraints.Size;
+import javax.validation.constraints.Size;
 
 @Entity(name = "pdf")
 @Data
