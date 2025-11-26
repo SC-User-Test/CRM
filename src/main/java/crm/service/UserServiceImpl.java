@@ -36,12 +36,12 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Autowired
+    @Autowired(required = false)
     public void setAuthenticationManager(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
 
-    @Autowired
+    @Autowired(required = false)
     public void setSpringDataUserDetailsService(SpringDataUserDetailsService springDataUserDetailsService) {
         this.springDataUserDetailsService = springDataUserDetailsService;
     }
@@ -74,11 +74,13 @@ public class UserServiceImpl implements UserService {
             user.setRole(userRole);
             userRepository.save(user);
         }
-        UserDetails userDetails = springDataUserDetailsService.loadUserByUsername(user.getUsername());
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
-        authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+        if (authenticationManager != null && springDataUserDetailsService != null) {
+            UserDetails userDetails = springDataUserDetailsService.loadUserByUsername(user.getUsername());
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                    new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+            authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+        }
     }
 
     @Override

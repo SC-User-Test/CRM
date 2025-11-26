@@ -26,6 +26,7 @@ public class Contract {
 
     private String content;
 
+    @Column(name = "contract_value")
     private BigDecimal value;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
