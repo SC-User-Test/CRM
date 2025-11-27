@@ -2,6 +2,7 @@ package crm.csv;
 
 import com.opencsv.CSVReader;
 import crm.utils.ReadDataUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileReader;
@@ -9,11 +10,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class CSVTest {
 
     public static void main(String[] args) {
         File document = ReadDataUtils.ReadFile("Select CSV file", null, "Only CSV Files", "csv");
-//        System.out.println(document.getName());
+        log.info("Selected CSV file: {}", document != null ? document.getName() : "No file selected");
 
         CSVReader reader;
         List<Object[]> data = new ArrayList<>();
@@ -21,18 +23,20 @@ public class CSVTest {
             reader = new CSVReader(new FileReader(document));
             String[] line;
             while ((line = reader.readNext()) != null) {
-//                System.out.println(line[1] + "\t" + line[2]);
+                log.debug("Processing CSV line: {} - {}", line.length > 1 ? line[1] : "N/A",
+                         line.length > 2 ? line[2] : "N/A");
                 data.add(line);
-                if(line[1].equals("QUICK SUB")){
-                    System.out.println(line[0] + "\t" + line[1] + "\t" + line[2]);
+                if(line.length > 1 && "QUICK SUB".equals(line[1])){
+                    log.info("Found QUICK SUB record: {} - {} - {}",
+                            line.length > 0 ? line[0] : "N/A",
+                            line.length > 1 ? line[1] : "N/A",
+                            line.length > 2 ? line[2] : "N/A");
                 }
-
             }
+            log.info("Successfully processed {} CSV records", data.size());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Failed to process CSV file: {}", e.getMessage(), e);
         }
-		/*System.out.println(data.get(0)[1] + "\t" + data.get(0)[2]);
-		System.out.println(data.get(1)[1] + "\t" + data.get(1)[2]);*/
     }
 
 }

@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -33,16 +34,55 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        http
+            // Enhanced security headers for cloud deployment
+            .headers(headers -> headers
+                .frameOptions().deny()
+                .contentTypeOptions().and()
+                .httpStrictTransportSecurity(hstsConfig -> hstsConfig
+                    .maxAgeInSeconds(31536000)
+                    .includeSubdomains(true))
+                .referrerPolicy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
+            )
+            // CSRF protection with secure configuration
+            .csrf(csrf -> csrf
+                .ignoringAntMatchers("/actuator/**", "/h2-console/**")
+            )
+            // Authorization configuration
+            .authorizeRequests(authz -> authz
                 .antMatchers("/admin/**", "/user/delete/**").hasRole("ADMIN")
-                .antMatchers("/pdf-generator", "/search/**", "/customer/**", "/user/edit/**", "/user/list", "/contract/**").hasAnyRole( "ADMIN", "USER", "MANAGER", "OWNER")
-                .anyRequest().permitAll()
+                .antMatchers("/pdf-generator", "/search/**", "/customer/**", "/user/edit/**", "/user/list", "/contract/**")
+                    .hasAnyRole("ADMIN", "USER", "MANAGER", "OWNER")
+                .antMatchers("/actuator/health", "/actuator/info").permitAll()
+                .antMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                .antMatchers("/h2-console/**").permitAll() // Only for development
+                .anyRequest().authenticated()
+            )
+            // Form login configuration
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/", true)
+                .failureUrl("/login?error=true")
+                .permitAll()
+            )
+            // Logout configuration
+            .logout(logout -> logout
+                .logoutSuccessUrl("/")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll()
+            )
+            // Exception handling
+            .exceptionHandling(ex -> ex
+                .accessDeniedPage("/403")
+            )
+            // Session management for cloud deployment
+            .sessionManagement(session -> session
+                .maximumSessions(1)
+                .maxSessionsPreventsLogin(false)
                 .and()
-                .formLogin().loginPage("/login").permitAll()
-                .and()
-                .logout().logoutSuccessUrl("/").permitAll()
-                .and()
-                .exceptionHandling().accessDeniedPage("/403");
+                .sessionFixation().migrateSession()
+            );
     }
 
 }
