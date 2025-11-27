@@ -1,22 +1,37 @@
 package crm.utils;
 
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.util.Arrays;
 
 public class ReadDataUtils {
 
-    public static File ReadFile(String dialogMEssage, JFrame parent, String fileExtensionDescription,
+    public static File ReadFile(String dialogMEssage, String filePath, String fileExtensionDescription,
                                 String... fileExtension) {
-        JFileChooser chooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(fileExtensionDescription, fileExtension);
-        chooser.setFileFilter(filter);
-        int returnVal = chooser.showOpenDialog(parent);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            System.out.println("You chose to open this file: " + chooser.getSelectedFile().getName());
-            return chooser.getSelectedFile();
+        // For containerized environments, accept file path directly instead of using GUI
+        if (filePath == null || filePath.trim().isEmpty()) {
+            System.out.println("No file path provided for: " + dialogMEssage);
+            return null;
         }
-        return null;
+
+        File file = new File(filePath.trim());
+        if (!file.exists()) {
+            System.out.println("File does not exist: " + filePath);
+            return null;
+        }
+
+        // Validate file extension if provided
+        if (fileExtension != null && fileExtension.length > 0) {
+            String fileName = file.getName().toLowerCase();
+            boolean validExtension = Arrays.stream(fileExtension)
+                .anyMatch(ext -> fileName.endsWith("." + ext.toLowerCase()));
+            if (!validExtension) {
+                System.out.println("Invalid file extension. Expected: " + Arrays.toString(fileExtension));
+                return null;
+            }
+        }
+
+        System.out.println("Selected file: " + file.getName());
+        return file;
     }
 
 }

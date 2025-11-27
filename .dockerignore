@@ -1,0 +1,48 @@
+# Maven
+target/
+.m2/
+mvnw
+mvnw.cmd
+.mvn/
+
+# Gradle
+build/
+.gradle/
+gradlew
+gradlew.bat
+gradle/wrapper/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+README*
+DOCS/
+docs/
+
+# Logs
+logs/
+*.log
+
+# Temp files
+*.tmp
+*.bak
+*.swp
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
