@@ -7,6 +7,12 @@ import com.itextpdf.text.pdf.PdfWriter;
 import crm.entity.Pdf;
 import crm.service.PdfService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,8 +20,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Controller
 @Slf4j
@@ -27,16 +35,29 @@ public class PdfController {
         this.pdfService = pdfService;
     }
 
-    private void generateSamplePdf(String fileName, String text) throws FileNotFoundException, DocumentException {
+    private byte[] generateSamplePdf(String fileName, String text) throws DocumentException, IOException {
         if (!fileName.endsWith(".pdf")) {
             fileName += ".pdf";
         }
+
         Document document = new Document();
-        PdfWriter.getInstance(document, new FileOutputStream(fileName));
-        document.open();
-        Paragraph paragraph = new Paragraph(text);
-        document.add(paragraph);
-        document.close();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        try {
+            PdfWriter.getInstance(document, outputStream);
+            document.open();
+            Paragraph paragraph = new Paragraph(text);
+            document.add(paragraph);
+
+            log.info("PDF generated successfully in memory for file: {} at {}", fileName, LocalDateTime.now());
+
+        } finally {
+            if (document.isOpen()) {
+                document.close();
+            }
+        }
+
+        return outputStream.toByteArray();
     }
 
     @GetMapping("/pdf-generator")
@@ -46,19 +67,39 @@ public class PdfController {
     }
 
     @PostMapping("/pdf-generator")
-    public String generatePdf(@Valid Pdf pdf, BindingResult bindingResult) {
+    public ResponseEntity<Resource> generatePdf(@Valid Pdf pdf, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "redirect:/pdf-generator";
-        } else {
-            try {
-                generateSamplePdf(pdf.getName(), pdf.getContent());
-                pdfService.savePdf(pdf);
-            } catch (FileNotFoundException e) {
-                log.info("File Not Found");
-            } catch (DocumentException e) {
-                log.info("Document");
+            log.warn("PDF generation failed due to validation errors for file: {}", pdf.getName());
+            return ResponseEntity.badRequest().build();
+        }
+
+        try {
+            byte[] pdfBytes = generateSamplePdf(pdf.getName(), pdf.getContent());
+            pdfService.savePdf(pdf);
+
+            String fileName = pdf.getName();
+            if (!fileName.endsWith(".pdf")) {
+                fileName += ".pdf";
             }
-            return "pdf/success";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
+            headers.setContentType(MediaType.APPLICATION_PDF);
+
+            ByteArrayResource resource = new ByteArrayResource(pdfBytes);
+
+            log.info("PDF generated and returned successfully for file: {} at {}", fileName, LocalDateTime.now());
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentLength(pdfBytes.length)
+                    .body(resource);
+
+        } catch (DocumentException e) {
+            log.error("PDF document generation failed for file: {} with error: {}", pdf.getName(), e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        } catch (IOException e) {
+            log.error("IO error during PDF generation for file: {} with error: {}", pdf.getName(), e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
