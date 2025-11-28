@@ -43,7 +43,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
+                .authorizeHttpRequests()
                 .antMatchers("/admin/**", "/user/delete/**").hasRole("ADMIN")
                 .antMatchers("/pdf-generator", "/search/**", "/customer/**", "/user/edit/**", "/user/list", "/contract/**").hasAnyRole("ADMIN", "USER", "MANAGER", "OWNER")
                 .anyRequest().permitAll()
