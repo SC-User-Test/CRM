@@ -1,21 +1,22 @@
 package crm.utils;
 
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.nio.file.Paths;
 
 public class ReadDataUtils {
 
-    public static File ReadFile(String dialogMEssage, JFrame parent, String fileExtensionDescription,
+    public static File ReadFile(String dialogMEssage, String unused, String fileExtensionDescription,
                                 String... fileExtension) {
-        JFileChooser chooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(fileExtensionDescription, fileExtension);
-        chooser.setFileFilter(filter);
-        int returnVal = chooser.showOpenDialog(parent);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            System.out.println("You chose to open this file: " + chooser.getSelectedFile().getName());
-            return chooser.getSelectedFile();
+        // Replace GUI file chooser with environment variable configuration
+        String filePath = System.getenv("CSV_FILE_PATH");
+        if (filePath != null && !filePath.isEmpty()) {
+            File file = new File(filePath);
+            if (file.exists() && file.isFile()) {
+                System.out.println("Using configured file: " + file.getName());
+                return file;
+            }
         }
+        System.out.println("No valid CSV_FILE_PATH environment variable configured");
         return null;
     }
 
