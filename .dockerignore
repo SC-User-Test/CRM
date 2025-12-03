@@ -1,0 +1,49 @@
+# Maven
+target/
+mvnw
+mvnw.cmd
+.mvn/
+
+# IDE
+.idea/
+.vscode/
+.eclipse/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+README*
+LICENSE*
+docs/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests
+src/test/
+
+# Build artifacts
+*.jar
+*.war
+*.ear
+*.class
+
+# Environment
+.env
+.env.*
+*.env

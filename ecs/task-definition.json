@@ -1,0 +1,65 @@
+{
+  "family": "compcrm-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::{{ACCOUNT_ID}}:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::{{ACCOUNT_ID}}:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "compcrm",
+      "image": "{{IMAGE_URI}}",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "JAVA_OPTS",
+          "value": "-Xmx768m -Xms256m -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+        },
+        {
+          "name": "SPRING_PROFILES_ACTIVE",
+          "value": "docker"
+        },
+        {
+          "name": "TZ",
+          "value": "UTC"
+        },
+        {
+          "name": "DB_HOST",
+          "value": "localhost"
+        },
+        {
+          "name": "DB_PORT",
+          "value": "3306"
+        },
+        {
+          "name": "DB_NAME",
+          "value": "crm"
+        },
+        {
+          "name": "DB_USERNAME",
+          "value": "root"
+        },
+        {
+          "name": "DB_PASSWORD",
+          "value": "changeme"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/compcrm",
+          "awslogs-region": "{{AWS_REGION}}",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
+        }
+      }
+    }
+  ]
+}
