@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  test-km1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: test-km1:latest
+    container_name: test-km1-app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_OPTS=-Xmx512m -Xms256m -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0
+      - TZ=UTC
+      - DATABASE_URL=${DATABASE_URL:-jdbc:mysql://host.docker.internal:3306/testdb}
+      - DATABASE_USERNAME=${DATABASE_USERNAME:-root}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-password}
+    volumes:
+      - ./config:/app/config:ro
+      - ./logs:/app/logs
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "exit 0"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  config:
+  logs:
