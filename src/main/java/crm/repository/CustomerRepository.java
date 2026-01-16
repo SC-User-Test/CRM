@@ -20,7 +20,7 @@ import java.util.Set;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-    @Query(value = "select max(id) from crm.customer", nativeQuery = true)
+    @Query(value = "SELECT MAX(id) FROM customer", nativeQuery = true)
     Long getMaxId();
 
     Iterable<Customer> findAllByEnabled(int enabled);
@@ -49,7 +49,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Iterable<Customer> findByEnabledAndFirstNameAndLastName(int enabled, String firstName, String lastName);
     Iterable<Customer> findByFirstNameAndLastName(String firstName, String lastName);
 
-    Iterable<Customer> findByEnabledAndCategories(int enabled, Set<Category> category);
-    Iterable<Customer> findByCategories(Set<Category> category);
+    @Query("SELECT DISTINCT c FROM Customer c JOIN c.categories cat WHERE c.enabled = :enabled AND cat IN :categories")
+    Iterable<Customer> findByEnabledAndCategories(int enabled, Set<Category> categories);
+
+    @Query("SELECT DISTINCT c FROM Customer c JOIN c.categories cat WHERE cat IN :categories")
+    Iterable<Customer> findByCategories(Set<Category> categories);
 
 }

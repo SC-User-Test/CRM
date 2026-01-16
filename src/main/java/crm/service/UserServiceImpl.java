@@ -18,8 +18,6 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private BCryptPasswordEncoder passwordEncoder;
-    private AuthenticationManager authenticationManager;
-    private SpringDataUserDetailsService springDataUserDetailsService;
 
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
@@ -36,16 +34,6 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Autowired
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
-
-    @Autowired
-    public void setSpringDataUserDetailsService(SpringDataUserDetailsService springDataUserDetailsService) {
-        this.springDataUserDetailsService = springDataUserDetailsService;
-    }
-
     @Override
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -58,7 +46,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User showUser(Long id) {
-        return userRepository.findOne(id);
+        return userRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -74,11 +62,6 @@ public class UserServiceImpl implements UserService {
             user.setRole(userRole);
             userRepository.save(user);
         }
-        UserDetails userDetails = springDataUserDetailsService.loadUserByUsername(user.getUsername());
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
-        authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
     }
 
     @Override
@@ -87,7 +70,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(password));
         Role userRole = roleRepository.findByName("ROLE_USER");
         try {
-            userRole = roleRepository.findOne(user.getRole().getId());
+            userRole = roleRepository.findById(user.getRole().getId()).orElse(null);
         } catch (NullPointerException e) {
             userRole = roleRepository.findByName("ROLE_USER");
         } finally {

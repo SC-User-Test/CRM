@@ -11,7 +11,7 @@ import java.util.List;
 
 public class CSVTest {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         File document = ReadDataUtils.ReadFile("Select CSV file", null, "Only CSV Files", "csv");
 //        System.out.println(document.getName());
 
