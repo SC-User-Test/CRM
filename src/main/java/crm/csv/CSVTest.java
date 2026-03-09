@@ -9,9 +9,30 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @deprecated This class uses GUI-based file selection which is incompatible with containerized
+ * environments. CSV import functionality has been migrated to CsvUploadController which provides
+ * a REST API endpoint for file uploads (/api/csv/upload).
+ *
+ * This class should not be used in production. For CSV processing in containers, use:
+ * POST /api/csv/upload with multipart/form-data containing the CSV file.
+ */
+@Deprecated
 public class CSVTest {
 
+    /**
+     * @deprecated This main method uses JFileChooser which requires a graphical display.
+     * It will fail with HeadlessException in container environments.
+     * Use CsvUploadController REST API instead.
+     */
+    @Deprecated
     public static void main(String[] args) {
+        System.err.println("WARNING: CSVTest is deprecated and incompatible with container environments.");
+        System.err.println("Use CsvUploadController REST API instead: POST /api/csv/upload");
+        System.err.println("This class will be removed in a future version.");
+
+        // Original implementation kept for backward compatibility only
+        // Will fail in headless environments
         File document = ReadDataUtils.ReadFile("Select CSV file", null, "Only CSV Files", "csv");
 //        System.out.println(document.getName());
 
