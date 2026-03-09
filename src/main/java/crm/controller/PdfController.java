@@ -13,9 +13,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 @Controller
 @Slf4j
@@ -27,12 +28,9 @@ public class PdfController {
         this.pdfService = pdfService;
     }
 
-    private void generateSamplePdf(String fileName, String text) throws FileNotFoundException, DocumentException {
-        if (!fileName.endsWith(".pdf")) {
-            fileName += ".pdf";
-        }
+    private void generateSamplePdf(String fileName, String text, OutputStream outputStream) throws DocumentException {
         Document document = new Document();
-        PdfWriter.getInstance(document, new FileOutputStream(fileName));
+        PdfWriter.getInstance(document, outputStream);
         document.open();
         Paragraph paragraph = new Paragraph(text);
         document.add(paragraph);
@@ -46,19 +44,27 @@ public class PdfController {
     }
 
     @PostMapping("/pdf-generator")
-    public String generatePdf(@Valid Pdf pdf, BindingResult bindingResult) {
+    public String generatePdf(@Valid Pdf pdf, BindingResult bindingResult, HttpServletResponse response) {
         if (bindingResult.hasErrors()) {
             return "redirect:/pdf-generator";
         } else {
             try {
-                generateSamplePdf(pdf.getName(), pdf.getContent());
+                String fileName = pdf.getName();
+                if (!fileName.endsWith(".pdf")) {
+                    fileName += ".pdf";
+                }
+                response.setContentType("application/pdf");
+                response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+                generateSamplePdf(pdf.getName(), pdf.getContent(), response.getOutputStream());
                 pdfService.savePdf(pdf);
-            } catch (FileNotFoundException e) {
-                log.info("File Not Found");
+                return null;
             } catch (DocumentException e) {
-                log.info("Document");
+                log.info("Document Exception: " + e.getMessage());
+                return "redirect:/pdf-generator?error";
+            } catch (Exception e) {
+                log.info("Error: " + e.getMessage());
+                return "redirect:/pdf-generator?error";
             }
-            return "pdf/success";
         }
     }
 
