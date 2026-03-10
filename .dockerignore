@@ -1,0 +1,69 @@
+# === .dockerignore ===
+# Build output
+target/
+build/
+*.class
+*.jar
+*.war
+
+# Maven wrapper (DO NOT copy - use system mvn)
+mvnw
+mvnw.cmd
+.mvn/
+
+# Gradle wrapper (DO NOT copy - use system gradle)
+gradlew
+gradlew.bat
+gradle/wrapper/
+
+# IDE files
+.idea/
+.vscode/
+.settings/
+.classpath
+.project
+*.iml
+*.iws
+*.ipr
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+README*
+LICENSE*
+docs/
+
+# Test files
+src/test/
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Docker files
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+Jenkinsfile
+
+# Environment files
+.env
+.env.local

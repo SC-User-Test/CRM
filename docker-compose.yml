@@ -1,0 +1,41 @@
+# === docker-compose.yml ===
+version: '3.8'
+
+services:
+  compappcrm-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: compappcrm:latest
+    container_name: compappcrm-app
+    ports:
+      - "8080:8080"
+    environment:
+      # Java runtime options
+      JAVA_OPTS: "-Xmx512m -Xms256m -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+      
+      # Spring Boot profile
+      SPRING_PROFILES_ACTIVE: docker
+      
+      # Database configuration (connect to external MySQL)
+      DB_HOST: ${DB_HOST:-localhost}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-crm}
+      DB_USERNAME: ${DB_USERNAME:-root}
+      DB_PASSWORD: ${DB_PASSWORD}
+      
+      # Management configuration
+      MANAGEMENT_SECURITY_ENABLED: ${MANAGEMENT_SECURITY_ENABLED:-true}
+      
+      # Timezone
+      TZ: UTC
+    volumes:
+      - ./logs:/app/logs
+      - ./config:/app/config
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
