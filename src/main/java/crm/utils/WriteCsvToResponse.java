@@ -18,10 +18,9 @@ public class WriteCsvToResponse {
 
     public static void writeCustomers(PrintWriter printWriter, List<Customer> customers) {
         try {
-            ColumnPositionMappingStrategy columnPositionMappingStrategy = new ColumnPositionMappingStrategy();
+            ColumnPositionMappingStrategy<Customer> columnPositionMappingStrategy = new ColumnPositionMappingStrategy<>();
 
             columnPositionMappingStrategy.setType(Customer.class);
-            columnPositionMappingStrategy.generateHeader();
 
             String[] columns = new String[]{"id", "name", "email", "phone", "firstName", "lastName", "city", "address", "enabled"};
             columnPositionMappingStrategy.setColumnMapping(columns);
@@ -40,7 +39,7 @@ public class WriteCsvToResponse {
 
     public static void writeCustomer(PrintWriter printWriter, Customer customer) {
         try {
-            ColumnPositionMappingStrategy columnPositionMappingStrategy = new ColumnPositionMappingStrategy();
+            ColumnPositionMappingStrategy<Customer> columnPositionMappingStrategy = new ColumnPositionMappingStrategy<>();
 
             columnPositionMappingStrategy.setType(Customer.class);
 
