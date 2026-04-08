@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: crm-storage-pvc
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc  # Change based on cloud provider
+  resources:
+    requests:
+      storage: 10Gi
+---
+# AWS EFS StorageClass Example
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: efs-sc
+provisioner: efs.csi.aws.com
+parameters:
+  provisioningMode: efs-ap
+  fileSystemId: fs-xxxxxxxxx  # Replace with your EFS ID
+  directoryPerms: "700"
+  gidRangeStart: "1000"
+  gidRangeEnd: "2000"
+  basePath: "/crm-storage"
+---
+# Azure Files StorageClass Example (commented out)
+# apiVersion: storage.k8s.io/v1
+# kind: StorageClass
+# metadata:
+#   name: azure-files-sc
+# provisioner: file.csi.azure.com
+# parameters:
+#   skuName: Standard_LRS
+# allowVolumeExpansion: true
+# mountOptions:
+#   - dir_mode=0777
+#   - file_mode=0777
+#   - uid=1000
+#   - gid=1000
+---
+# GCP Filestore StorageClass Example (commented out)
+# apiVersion: storage.k8s.io/v1
+# kind: StorageClass
+# metadata:
+#   name: filestore-sc
+# provisioner: filestore.csi.storage.gke.io
+# parameters:
+#   tier: standard
+#   network: default
+# allowVolumeExpansion: true

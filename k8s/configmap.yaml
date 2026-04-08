@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: crm-config
+  namespace: default
+data:
+  # Application Configuration
+  APP_NAME: "CompTestCRM"
+  SERVER_PORT: "8080"
+  
+  # Database Configuration (non-sensitive)
+  DB_DDL_AUTO: "validate"
+  DB_SHOW_SQL: "false"
+  DB_DIALECT: "org.hibernate.dialect.MySQL5Dialect"
+  
+  # Database Pool Configuration
+  DB_POOL_SIZE: "20"
+  DB_POOL_MIN_IDLE: "5"
+  DB_CONNECTION_TIMEOUT: "30000"
+  DB_IDLE_TIMEOUT: "600000"
+  DB_MAX_LIFETIME: "1800000"
+  
+  # File Storage Configuration (use EFS/Azure Files/GCS mount paths)
+  PDF_STORAGE_PATH: "/mnt/storage/pdfs"
+  CSV_STORAGE_PATH: "/mnt/storage/csv"
+  UPLOAD_STORAGE_PATH: "/mnt/storage/uploads"
+  
+  # Logging Configuration
+  LOG_LEVEL_ROOT: "INFO"
+  LOG_LEVEL_APP: "INFO"
+  LOG_LEVEL_SPRING_WEB: "INFO"
+  LOG_LEVEL_HIBERNATE: "WARN"
+  
+  # Actuator Configuration
+  MANAGEMENT_SECURITY_ENABLED: "false"
+  MANAGEMENT_CONTEXT_PATH: "/appinfo"
+  
+  # Thymeleaf Configuration
+  THYMELEAF_MODE: "LEGACYHTML5"
+  THYMELEAF_CACHE: "true"

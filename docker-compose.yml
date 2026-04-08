@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:5.7
+    container_name: crm-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: crm
+      MYSQL_USER: crmuser
+      MYSQL_PASSWORD: crmpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - crm-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # CRM Application
+  crm-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: crm-app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      # Database Configuration
+      DB_URL: jdbc:mysql://mysql:3306/crm?useSSL=false&allowPublicKeyRetrieval=true
+      DB_USERNAME: crmuser
+      DB_PASSWORD: crmpass
+      DB_DDL_AUTO: update
+      
+      # File Storage Configuration
+      PDF_STORAGE_PATH: /app/storage/pdfs
+      CSV_STORAGE_PATH: /app/storage/csv
+      UPLOAD_STORAGE_PATH: /app/storage/uploads
+      
+      # Application Configuration
+      SERVER_PORT: 8080
+      APP_NAME: CompTestCRM
+      
+      # Logging Configuration
+      LOG_LEVEL_ROOT: INFO
+      LOG_LEVEL_APP: DEBUG
+      
+      # Database Pool Configuration
+      DB_POOL_SIZE: 10
+      DB_POOL_MIN_IDLE: 5
+      DB_CONNECTION_TIMEOUT: 30000
+    ports:
+      - "8080:8080"
+    volumes:
+      - app-storage:/app/storage
+    networks:
+      - crm-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/appinfo/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+    driver: local
+  app-storage:
+    driver: local
+
+networks:
+  crm-network:
+    driver: bridge
