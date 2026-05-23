@@ -23,6 +23,9 @@ public class Pdf {
     @Size(min = 2)
     private String name;
 
+    @Column(length = 500)
+    private String storageUrl;
+
     @Transient
     private String content;
 
