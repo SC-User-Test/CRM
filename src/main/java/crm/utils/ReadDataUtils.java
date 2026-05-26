@@ -1,22 +1,97 @@
 package crm.utils;
 
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.io.File;
+import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+
+/**
+ * Cloud-ready utility for reading data from Azure Blob Storage.
+ * Replaces local file system dependencies with Azure Blob Storage.
+ */
+@Component
 public class ReadDataUtils {
 
-    public static File ReadFile(String dialogMEssage, JFrame parent, String fileExtensionDescription,
-                                String... fileExtension) {
-        JFileChooser chooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(fileExtensionDescription, fileExtension);
-        chooser.setFileFilter(filter);
-        int returnVal = chooser.showOpenDialog(parent);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            System.out.println("You chose to open this file: " + chooser.getSelectedFile().getName());
-            return chooser.getSelectedFile();
+    @Value("${azure.storage.connection-string:#{null}}")
+    private String connectionString;
+
+    @Value("${azure.storage.container-name:crm-files}")
+    private String containerName;
+
+    /**
+     * Reads a file from Azure Blob Storage.
+     * 
+     * @param blobName The name of the blob to read
+     * @return InputStream of the blob content
+     */
+    public InputStream readFileFromBlobStorage(String blobName) {
+        if (connectionString == null || connectionString.isEmpty()) {
+            throw new IllegalStateException("Azure Storage connection string is not configured. " +
+                    "Please set azure.storage.connection-string in application.properties");
         }
-        return null;
+
+        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
+                .connectionString(connectionString)
+                .buildClient();
+
+        BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
+        BlobClient blobClient = containerClient.getBlobClient(blobName);
+
+        if (!blobClient.exists()) {
+            throw new IllegalArgumentException("Blob does not exist: " + blobName);
+        }
+
+        return blobClient.openInputStream();
     }
 
+    /**
+     * Reads a file from Azure Blob Storage and returns as byte array.
+     * 
+     * @param blobName The name of the blob to read
+     * @return byte array of the blob content
+     */
+    public byte[] readFileAsByteArray(String blobName) {
+        try (InputStream inputStream = readFileFromBlobStorage(blobName);
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to read file from Azure Blob Storage: " + blobName, e);
+        }
+    }
+
+    /**
+     * Lists all blobs in the container with a specific extension.
+     * 
+     * @param fileExtension The file extension to filter (e.g., "csv", "pdf")
+     * @return Iterable of blob names
+     */
+    public Iterable<String> listBlobsByExtension(String fileExtension) {
+        if (connectionString == null || connectionString.isEmpty()) {
+            throw new IllegalStateException("Azure Storage connection string is not configured. " +
+                    "Please set azure.storage.connection-string in application.properties");
+        }
+
+        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
+                .connectionString(connectionString)
+                .buildClient();
+
+        BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
+        
+        return containerClient.listBlobs()
+                .stream()
+                .map(blobItem -> blobItem.getName())
+                .filter(name -> name.endsWith("." + fileExtension))
+                .collect(java.util.stream.Collectors.toList());
+    }
 }
