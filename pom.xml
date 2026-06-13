@@ -135,12 +135,24 @@
         <dependency>
             <groupId>net.sf.supercsv</groupId>
             <artifactId>super-csv</artifactId>
-            <version>2.4.0</version>
+        <!-- Azure SDK for Blob Storage - Cloud-ready file storage -->
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-blob</artifactId>
+            <version>12.14.4</version>
         </dependency>
-    </dependencies>
-
-    <build>
-        <plugins>
+        <!-- Azure Service Bus for scheduled messaging (replaces java.util.Timer) -->
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-messaging-servicebus</artifactId>
+            <version>7.10.0</version>
+        </dependency>
+        <!-- Azure Identity for authentication -->
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+            <version>1.6.0</version>
+        </dependency>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
