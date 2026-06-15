@@ -41,6 +41,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authz -> authz
                 .requestMatchers("/admin/**", "/user/delete/**").hasRole("ADMIN")
                 .requestMatchers("/pdf-generator", "/search/**", "/customer/**", "/user/edit/**", "/user/list", "/contract/**").hasAnyRole("ADMIN", "USER", "MANAGER", "OWNER")
+                .requestMatchers("/health").permitAll()
                 .anyRequest().permitAll()
             )
             .formLogin(form -> form
