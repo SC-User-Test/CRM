@@ -55,7 +55,13 @@ public class UserServiceImpl implements UserService {
     public Iterable<User> listAllUsers() {
         return userRepository.findAllByEnabled(1);
     }
+
+    @Override
+    public User showUser(Long id) {
         return userRepository.findById(id).orElse(null);
+    }
+
+    @Override
     public void saveUser(User user) {
         Role userRole = roleRepository.findByName("ROLE_USER");
         user.setRole(userRole);
@@ -77,12 +83,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void editUser(User user) {
-            userRole = roleRepository.findById(user.getRole().getId()).orElse(null);
-        } finally {
-            user.setRole(userRole);
-            user.setEnabled(1);
-            userRepository.save(user);
-        }
+        Role userRole = roleRepository.findById(user.getRole().getId()).orElse(null);
+        user.setRole(userRole);
+        user.setEnabled(1);
+        userRepository.save(user);
     }
 
     @Override
