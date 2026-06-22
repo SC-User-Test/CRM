@@ -34,13 +34,7 @@ public class ContractServiceImpl implements ContractService {
     public Iterable<Contract> listAllContracts() {
         return contractRepository.findAll();
     }
-
-    @Override
-    public Contract showContract(Long id) {
-        return contractRepository.findOne(id);
-    }
-
-    @Override
+        return contractRepository.findById(id).orElse(null);
     public Iterable<Contract> findAllByValueLessThanEqual(BigDecimal value) {
         return contractRepository.findAllByValueLessThanEqual(value);
     }
@@ -94,15 +88,6 @@ public class ContractServiceImpl implements ContractService {
     public Iterable<Contract> findAllByCustomerAndUser(Customer customer, User user) {
         return contractRepository.findAllByCustomerAndUser(customer, user);
     }
-
-    @Override
-    public Iterable<Contract> findAllByUser(User user) {
-        return contractRepository.findAllByUser(user);
-    }
-
-    @Override
-    public void saveContract(Contract contract) {
-        customerRepository.save(customerRepository.findAll());
         userRepository.save(userRepository.findAll());
         contractRepository.save(contract);
     }

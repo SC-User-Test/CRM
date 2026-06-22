@@ -4,15 +4,15 @@ import crm.entity.Customer;
 import crm.service.CustomerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/customer")
 public class CustomerController {
-
     private CustomerService customerService;
 
     public CustomerController(CustomerService customerService) {

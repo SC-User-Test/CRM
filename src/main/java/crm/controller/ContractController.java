@@ -11,12 +11,11 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/contract")
 public class ContractController {
-
     private ContractService contractService;
 
     private CustomerService customerService;
