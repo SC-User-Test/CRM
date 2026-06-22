@@ -21,18 +21,11 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.getMaxId();
     }
 
-    @Override
-    public Iterable<Customer> listAllCustomers() {
-        return customerRepository.findAll();
-    }
 
     @Override
     public Customer showCustomer(Long id) {
-        return customerRepository.findOne(id);
     }
 
-    @Override
-    public Iterable<Customer> findAllByEnabledTrue() {
         return customerRepository.findAllByEnabled(1);
     }
 
