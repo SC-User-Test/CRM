@@ -48,7 +48,7 @@ public abstract class AbstractView extends org.springframework.web.servlet.view.
     /**
      * Write the given temporary OutputStream to the HTTP response.
      */
-    protected void writeToResponse(HttpServletResponse response, ByteArrayOutputStream baos) throws Exception {
+    protected void writeToResponse(HttpServletResponse response, ByteArrayOutputStream baos) throws java.io.IOException {
         response.setContentLength(baos.size());
         OutputStream out = response.getOutputStream();
         baos.writeTo(out);

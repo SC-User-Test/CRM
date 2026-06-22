@@ -21,11 +21,18 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.getMaxId();
     }
 
+    @Override
+    public Iterable<Customer> listAllCustomers() {
+        return customerRepository.findAll();
+    }
 
     @Override
     public Customer showCustomer(Long id) {
+        return customerRepository.findById(id).orElse(null);
     }
 
+    @Override
+    public Iterable<Customer> findAllByEnabledTrue() {
         return customerRepository.findAllByEnabled(1);
     }
 
@@ -83,7 +90,7 @@ public class CustomerServiceImpl implements CustomerService {
     public Iterable<Customer> findByEnabledTrueAndCategories(Set<Category> category) {
         return customerRepository.findByEnabledAndCategories(1, category);
     }
-//
+
     @Override
     public Iterable<Customer> findByEnabledFalseAndCategories(Set<Category> category) {
         return customerRepository.findByEnabledAndCategories(0, category);

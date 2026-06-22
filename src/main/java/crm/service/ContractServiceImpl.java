@@ -99,4 +99,9 @@ public class ContractServiceImpl implements ContractService {
     public Iterable<Contract> findAllByUser(User user) {
         return contractRepository.findAllByUser(user);
     }
+
+    @Override
+    public void saveContract(Contract contract) {
+        contractRepository.save(contract);
+    }
 }
