@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(password));
         Role userRole = roleRepository.findByName("ROLE_USER");
         try {
-            userRole = roleRepository.findById((long) user.getRole().getId()).orElse(userRole);
+            userRole = roleRepository.findById(user.getRole().getId()).orElse(userRole);
         } catch (NullPointerException e) {
             userRole = roleRepository.findByName("ROLE_USER");
         } finally {
