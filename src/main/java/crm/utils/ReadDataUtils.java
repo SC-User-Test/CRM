@@ -1,5 +1,6 @@
 package crm.utils;
 
+// Note: javax.swing is part of Java SE (JDK) and does not require migration to jakarta.*
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
